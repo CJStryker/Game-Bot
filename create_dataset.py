@@ -7,7 +7,6 @@ from time import sleep
 from PIL import ImageGrab
 from game_control import *
 from predict import predict
-from scipy.misc import imresize
 from game_control import get_id
 from get_dataset import save_img
 from multiprocessing import Process
@@ -17,9 +16,8 @@ from pynput.keyboard import Listener as key_listener
 
 def get_screenshot():
     img = ImageGrab.grab()
-    img = np.array(img)[:,:,:3] # Get first 3 channel from image as numpy array.
-    img = imresize(img, (150, 150, 3)).astype('float32')/255.
-    return img
+    img = img.convert('RGB').resize((150, 150))
+    return np.array(img).astype('float32')/255.
 
 def save_event_keyboard(data_path, event, key):
     key = get_id(key)

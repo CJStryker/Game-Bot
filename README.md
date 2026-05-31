@@ -1,44 +1,89 @@
 # Game Bot
 ### By Arda Mavi
 
-Artificial intelligence that learns to play any game by watching you.
+Artificial intelligence that can assist gameplay by watching your screen.
 
-## How does this work?
-- First: Run program and play any game for a little bit.
-- Second: Run program and watch the artificial intelligence play the game.
+The project now has two modes:
 
-## How does it work behind the scenes?
-When you run the training program, the program listens for your keyboard and mouse moving, then it saves those movements.<br>
-Artificial intelligence learn: When I push any button?<br/>
-And when you run the program, it plays the game just like you!
+1. **LLM gameplay assistant (default)** - captures the visible screen, sends it to a modern OpenAI multimodal model, and applies one safe keyboard or mouse action from an allowlist.
+2. **Legacy trained model** - replays a locally trained Keras model from captured examples.
 
-## But how does it learn?
-##### Magic! (just joking)
-With deep learning.<br/>
-Deep Learning is a subfield of machine learning with neural networks inspired by the structure of the brains artificial neural networks.
+## LLM gameplay assistant
 
-### Playing with Artificial Intelligence:
-1. Open your desired game (If you have already trained the artificial intelligence).
-2. Run `python3 ai.py` command in terminal.
+The default mode uses the OpenAI Responses API with a vision-capable model. Set your API key first:
 
-### Creating Training Dataset:
-1. Run `python3 create_dataset.py` command in terminal.
+```bash
+export OPENAI_API_KEY="your_api_key_here"
+```
+
+Then open the game window and run:
+
+```bash
+python3 ai.py --goal "Help me play this game and avoid danger"
+```
+
+Useful options:
+
+```bash
+python3 ai.py \
+  --model gpt-5.2 \
+  --goal "Win the race while staying on the track" \
+  --allowed-keys "w,a,s,d,space,left,right,up,down" \
+  --interval 1.0
+```
+
+Environment variables are also supported:
+
+- `OPENAI_API_KEY` - required by the OpenAI SDK.
+- `OPENAI_GAME_MODEL` - defaults to `gpt-5.2`.
+- `GAME_BOT_GOAL` - default gameplay instruction when `--goal` is omitted.
+
+Safety notes:
+
+- The LLM is restricted to the keys in `--allowed-keys` and a single mouse click action.
+- Keep the game focused and stop the bot with `Ctrl-C` in the terminal.
+- Prefer a slower `--interval` while testing so you can observe every action.
+
+## Playing with the legacy trained model
+
+1. Open your desired game after training the local model.
+2. Run:
+
+```bash
+python3 ai.py --mode trained
+```
+
+## Creating a training dataset for legacy mode
+
+1. Run:
+
+```bash
+python3 create_dataset.py
+```
+
 2. Play your desired game.
-3. Stop `create_dataset` program with `Cntrl-C` in terminal.
+3. Stop `create_dataset.py` with `Ctrl-C` in the terminal.
 
-### Model Training:
-`python3 train.py`
+## Model training for legacy mode
 
-### Using TensorBoard:
-`tensorboard --logdir=Data/Checkpoints/logs`
+```bash
+python3 train.py
+```
 
-### Important Notes:
-- Tested in Python version 3.6.0
+## Using TensorBoard
 
-- Install necessary modules with `sudo pip3 install -r requirements.txt` command.
+```bash
+tensorboard --logdir=Data/Checkpoints/logs
+```
 
-## WINDOWS Installation:
-- Install Python 3.6.0 : https://www.python.org/downloads/release/python-360/
-- Run CMD and Input Command `pip3 install -r requirements.txt`
+## Installation
 
-### This project is still being worked on ...
+```bash
+pip3 install -r requirements.txt
+```
+
+## Important notes
+
+- The LLM assistant requires an OpenAI API key and network access.
+- Screen capture and input control permissions may need to be enabled in your operating system.
+- This project is still being worked on.
