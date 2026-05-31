@@ -18,6 +18,7 @@ from time import sleep
 import numpy as np
 from PIL import ImageGrab
 from keras.models import model_from_json
+from openai import OpenAI
 
 from game_control import click, get_key, press, release
 from predict import predict
