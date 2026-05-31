@@ -1,8 +1,13 @@
 # Arda Mavi
 import numpy as np
-from scipy.misc import imresize
+from PIL import Image
+
+
+def resize_image(image, size=(150, 150)):
+    image = Image.fromarray(np.asarray(image).astype('uint8')).convert('RGB')
+    return np.asarray(image.resize(size, Image.Resampling.LANCZOS))
+
 
 def predict(model, X):
-    X = imresize(X, (150, 150, 3)).astype('float32')/255.
-    Y = model.predict(X.reshape(1,150,150,3))
-    return Y
+    X = resize_image(X).astype('float32') / 255.
+    return model.predict(X.reshape(1, 150, 150, 3))

@@ -1,6 +1,6 @@
 # Arda Mavi
 from pynput.mouse import Button, Controller as Mouse
-from pynput.keyboard import Controller as Keyboard
+from pynput.keyboard import Controller as Keyboard, Key
 
 # For encoding keyboard keys:
 def get_keys():
@@ -10,10 +10,73 @@ def get_key(id):
     return get_keys()[id]
 
 def get_id(key):
-    return get_keys().index(key)
+    return get_keys().index(normalize_key(key))
 
 keyboard = Keyboard()
 mouse = Mouse()
+
+SPECIAL_KEYS = {
+    'alt': Key.alt,
+    'altleft': Key.alt_l,
+    'altright': Key.alt_r,
+    'backspace': Key.backspace,
+    'capslock': Key.caps_lock,
+    'cmd': Key.cmd,
+    'command': Key.cmd,
+    'ctrl': Key.ctrl,
+    'ctrlleft': Key.ctrl_l,
+    'ctrlright': Key.ctrl_r,
+    'del': Key.delete,
+    'delete': Key.delete,
+    'down': Key.down,
+    'end': Key.end,
+    'enter': Key.enter,
+    'esc': Key.esc,
+    'escape': Key.esc,
+    'f1': Key.f1,
+    'f2': Key.f2,
+    'f3': Key.f3,
+    'f4': Key.f4,
+    'f5': Key.f5,
+    'f6': Key.f6,
+    'f7': Key.f7,
+    'f8': Key.f8,
+    'f9': Key.f9,
+    'f10': Key.f10,
+    'f11': Key.f11,
+    'f12': Key.f12,
+    'home': Key.home,
+    'insert': Key.insert,
+    'left': Key.left,
+    'pagedown': Key.page_down,
+    'pageup': Key.page_up,
+    'pause': Key.pause,
+    'printscreen': Key.print_screen,
+    'right': Key.right,
+    'shift': Key.shift,
+    'shiftleft': Key.shift_l,
+    'shiftright': Key.shift_r,
+    'space': Key.space,
+    'tab': Key.tab,
+    'up': Key.up,
+}
+
+
+def normalize_key(key):
+    if hasattr(key, 'char') and key.char is not None:
+        return key.char
+    if hasattr(key, 'name'):
+        return key.name
+    key_text = str(key)
+    if key_text.startswith('Key.'):
+        return key_text[4:]
+    return key_text.strip("'")
+
+
+def resolve_key(key):
+    if not isinstance(key, str):
+        return key
+    return SPECIAL_KEYS.get(key.lower(), key)
 
 # Mouse:
 def move(x, y):
@@ -25,14 +88,15 @@ def scroll(x, y):
     return
 
 def click(x, y):
-    mouse.press(Button.left)
+    mouse.position = (x, y)
+    mouse.click(Button.left)
     return
 
 # Keyboard:
 def press(key):
-    keyboard.press(key)
+    keyboard.press(resolve_key(key))
     return
 
 def release(key):
-    keyboard.release(key)
+    keyboard.release(resolve_key(key))
     return
